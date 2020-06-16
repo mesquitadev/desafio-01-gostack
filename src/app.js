@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-// const { uuid } = require("uuidv4");
+const { uuid } = require("uuidv4");
 
 const app = express();
 
@@ -11,11 +11,20 @@ app.use(cors());
 const repositories = [];
 
 app.get("/repositories", (request, response) => {
-  // TODO
+  return response.status(200).send(repositories)
 });
 
 app.post("/repositories", (request, response) => {
-  // TODO
+  try {
+    const data = request.body;
+    data.id = uuid()
+    repositories.push(data);
+    return response.status(201).send({
+      message: "Repositório cadastrado com sucesso!"
+    })
+  } catch (e) {
+    e.getMessage();
+  }
 });
 
 app.put("/repositories/:id", (request, response) => {
