@@ -11,32 +11,77 @@ app.use(cors());
 const repositories = [];
 
 app.get("/repositories", (request, response) => {
-  return response.status(200).send(repositories)
+  return response.status(200).json(repositories)
 });
 
 app.post("/repositories", (request, response) => {
-  try {
-    const data = request.body;
-    data.id = uuid()
-    repositories.push(data);
-    return response.status(201).send({
-      message: "Repositório cadastrado com sucesso!"
-    })
-  } catch (e) {
-    e.getMessage();
-  }
+  const { url, title, techs } = request.body;
+  const repos = { id: uuid(), url, title, techs, likes: 0 };
+  repositories.push(repos);
+  return response.status(201).json(repos)
 });
 
 app.put("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+  const { url, title, techs } = request.body;
+
+  const repoIndex = repositories.findIndex( repo => repo.id === id)
+
+  if(repoIndex < 0){
+    return response.status(404).json({
+      error : 'Project Not Found!'
+    })
+  }
+
+  repository = {
+    url, 
+    title,
+    techs
+  };
+
+  repositories[repoIndex] = repository;
+
+  return response.json(repository)
+
 });
 
 app.delete("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+  const { url, title, techs } = request.body;
+  const repoIndex = repositories.findIndex( repo => repo.id === id);
+
+  if(repoIndex < 0) {
+    return response.status(404).json({
+      error : 'Project Not Found!'
+    })
+  }
+
+  repositories.splice(repoIndex, 1);
+
+  return response.status(204).send();
 });
 
 app.post("/repositories/:id/like", (request, response) => {
-  // TODO
+  const { id } = request.params;
+
+  const repoIndex = repositories.findIndex( repo => repo.id === id)
+
+  if(repoIndex < 0){
+    return response.status(404).json({
+      error : 'Project Not Found!'
+    })
+  }
+
+  repository = {
+    url,
+    title,
+    techs,
+    likes : +1    
+  };
+
+  repositories[repoIndex] = repository;
+
+  return response.json(repository)
 });
 
 module.exports = app;
